@@ -1,0 +1,153 @@
+{
+  "name": "llm-context-monitor",
+  "displayName": "LLM 上下文监控",
+  "version": "0.1.0",
+  "description": "实时 LLM 上下文使用量监控 — 在 VS Code 状态栏中追踪 token、费用和上下文窗口使用情况",
+  "publisher": "llm-context-monitor",
+  "main": "./out/extension.js",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "llmContext.showDashboard",
+        "title": "显示 LLM 上下文仪表盘",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "llmContext.toggleDisplay",
+        "title": "切换上下文显示模式"
+      },
+      {
+        "command": "llmContext.resetStats",
+        "title": "重置 LLM 上下文统计"
+      },
+      {
+        "command": "llmContext.exportReport",
+        "title": "导出 LLM 上下文报告"
+      },
+      {
+        "command": "llmContext.startProxy",
+        "title": "启动 LLM 上下文代理"
+      },
+      {
+        "command": "llmContext.stopProxy",
+        "title": "停止 LLM 上下文代理"
+      },
+      {
+        "command": "llmContext.exportCACert",
+        "title": "导出 LLM 代理 CA 证书"
+      },
+      {
+        "command": "llmContext.resetMitm",
+        "title": "重置 LLM 代理 MITM 状态"
+      }
+    ],
+    "configuration": {
+      "title": "LLM 上下文监控",
+      "properties": {
+        "llmContext.proxyPort": {
+          "type": "number",
+          "default": 9877,
+          "description": "本地 HTTP 代理服务器端口"
+        },
+        "llmContext.display.mode": {
+          "type": "string",
+          "enum": [
+            "compact",
+            "detailed",
+            "hidden"
+          ],
+          "default": "detailed",
+          "enumDescriptions": [
+            "紧凑：仅显示百分比",
+            "详细：显示百分比和费用",
+            "隐藏"
+          ],
+          "description": "状态栏显示模式"
+        },
+        "llmContext.monitoredEndpoints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "api.anthropic.com",
+            "api.openai.com"
+          ],
+          "description": "要监控的 LLM API 端点列表"
+        },
+        "llmContext.modelOverrides": {
+          "type": "object",
+          "default": {},
+          "description": "覆盖模型配置（上下文窗口、定价），按键为模型 ID"
+        },
+        "llmContext.throttleInterval": {
+          "type": "number",
+          "default": 100,
+          "description": "UI 更新节流间隔（毫秒）"
+        },
+        "llmContext.autoStartProxy": {
+          "type": "boolean",
+          "default": true,
+          "description": "扩展激活时自动启动代理"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "llmContext",
+          "title": "LLM 上下文监控",
+          "icon": "$(pulse)"
+        }
+      ]
+    },
+    "views": {
+      "llmContext": [
+        {
+          "type": "webview",
+          "id": "llmContext.dashboard",
+          "name": "上下文仪表盘"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "webpack --mode production",
+    "compile": "webpack --mode none",
+    "watch": "webpack --mode none --watch",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "llm",
+    "token",
+    "context",
+    "monitor",
+    "anthropic",
+    "openai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.2",
+    "eventemitter3": "^5.0.4",
+    "undici": "^8.5.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.93.0",
+    "@vscode/vsce": "^3.9.2",
+    "ts-loader": "^9.6.1",
+    "typescript": "^6.0.3",
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.3"
+  }
+}
