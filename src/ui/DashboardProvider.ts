@@ -125,9 +125,12 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
     const currentSession = this.conversationTracker.getActiveSession();
     const allSessions = this.conversationTracker.getAllSessions();
 
-    // Calculate context window percentage
-    const modelConfig = this.modelRegistry.getModel(this.currentModel);
-    const totalTokens = this.currentInputTokens + this.currentOutputTokens;
+    // Use session data when available (JSONL sync), fall back to streaming counters
+    const model = currentSession?.model ?? this.currentModel;
+    const modelConfig = this.modelRegistry.getModel(model);
+    const totalTokens = currentSession
+      ? currentSession.totalUsage.totalTokens
+      : this.currentInputTokens + this.currentOutputTokens;
     const contextWindowPercent = modelConfig.contextWindow > 0
       ? Math.min(100, Math.round((totalTokens / modelConfig.contextWindow) * 1000) / 10)
       : 0;
